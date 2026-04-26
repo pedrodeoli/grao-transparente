@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cafe-marrom: #6F4E37;
+  --color-cafe-verde: #2E8B57;
+  --color-cafe-bege: #FAF5F0;
+}
+
+@layer base {
+  body {
+    @apply bg-cafe-bege text-slate-800 font-sans;
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+  }
+}
