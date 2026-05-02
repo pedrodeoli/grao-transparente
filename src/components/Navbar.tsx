@@ -18,7 +18,7 @@ export function Navbar() {
   return (
     <nav className="bg-cafe-marrom text-cafe-bege shadow-md">
       <div className="px-4 py-3 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+        <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 font-bold text-xl">
           <Coffee size={24} className="text-cafe-verde" />
           <span>Grão Transparente</span>
         </Link>

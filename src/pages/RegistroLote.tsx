@@ -13,7 +13,7 @@ const loteSchema = z.object({
   variedade: z.enum(['Arábica', 'Catuaí', 'Mundo Novo', 'Bourbon', 'Conilon (Robusta)', 'Outro'], {
     message: 'Selecione uma variedade válida'
   }),
-  metodo_secagem: z.enum(['Via Seca (Natural)', 'Via Úmida (Lavado)', 'Honey (Despolpado)'], {
+  metodo_secagem: z.enum(['Secagem natural', 'Secagem mecânica: secador estático', 'Secagem mecânica: secador rotativo', 'Secagem mista (natural + mecânica)'], {
     message: 'Selecione um método de secagem válido'
   }),
   quantidade_pacotes: z.coerce.number().min(1, 'A quantidade deve ser maior que zero'),
@@ -32,7 +32,7 @@ export function RegistroLote() {
       codigo_lote: '',
       data_colheita: '',
       variedade: 'Conilon (Robusta)',
-      metodo_secagem: 'Via Seca (Natural)',
+      metodo_secagem: 'Secagem natural',
       quantidade_pacotes: 1,
       notas_cultivo: ''
     }
@@ -69,9 +69,9 @@ export function RegistroLote() {
     <div className="min-h-screen bg-[#FAF5F0] flex flex-col font-sans">
       {/* Header */}
       <header className="bg-white px-4 py-4 flex items-center border-b border-gray-100 relative">
-        <button 
+        <button
           type="button"
-          onClick={() => navigate(-1)} 
+          onClick={() => navigate(-1)}
           className="text-gray-600 hover:text-cafe-marrom absolute left-4 p-1 rounded-full hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft size={22} strokeWidth={2.5} />
@@ -82,7 +82,7 @@ export function RegistroLote() {
       {/* Form Area */}
       <main className="flex-1 px-5 py-6 md:px-8 max-w-3xl mx-auto w-full mb-24">
         <form id="lote-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          
+
           {/* Código do Lote */}
           <div className="space-y-1.5">
             <label className="block text-sm font-semibold text-[#5c4a40]">
@@ -141,9 +141,7 @@ export function RegistroLote() {
             </label>
             <div className="space-y-3.5 mt-2 pl-1">
               {[
-                'Via Seca (Natural)',
-                'Via Úmida (Lavado)',
-                'Honey (Despolpado)'
+                'Secagem natural', 'Secagem mecânica: secador estático', 'Secagem mecânica: secador rotativo', 'Secagem mista (natural + mecânica)'
               ].map((method) => (
                 <label key={method} className="flex items-center gap-3 cursor-pointer group">
                   <div className="relative flex items-center justify-center w-[18px] h-[18px]">

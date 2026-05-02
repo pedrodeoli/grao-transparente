@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# ☕ Grão Transparente
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Grão Transparente** é uma aplicação web voltada para a agricultura familiar (foco em cafeicultores). O objetivo principal é substituir o controle manual de estoque e vendas por um sistema digital robusto, desenhado com a filosofia **Mobile-First** para ser amplamente utilizável diretamente no campo através de smartphones.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Funcionalidades
 
-## React Compiler
+*   **🌱 Registro de Lotes:** Cadastre colheitas com identificação automática (ex: `LOTE-2026-300`), detalhando variedade, método de secagem, notas de cultivo e quantidade inicial de pacotes gerados.
+*   **👥 Gestão de Clientes:** Cadastro simples de clientes (nome, contato, endereço) para facilitar a rastreabilidade das vendas.
+*   **🛒 Ponto de Venda (PDV) / Carrinho:** Tela intuitiva para registrar novas vendas. Permite adicionar produtos do estoque ao carrinho, com bloqueio contra venda de itens esgotados, além de seleção da forma de pagamento.
+*   **📦 Controle de Estoque (Dashboard):** Painel que informa imediatamente a totalidade de lotes registrados e a quantia consolidada de pacotes ainda não vendidos. A cada venda no PDV, o estoque é **automaticamente reduzido**.
+*   **🧾 Histórico de Vendas:** Relatório transacional completo que mostra o lucro total do mês corrente e permite filtrar vendas passadas por intervalo de dias, exibindo a hora, cliente, pacotes comprados e valor total.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tecnologias Utilizadas
 
-## Expanding the ESLint configuration
+Este projeto foi construído utilizando tecnologias modernas para o ecossistema frontend:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+*   **React 19** + **TypeScript**
+*   **Vite** (ferramenta de build super rápida)
+*   **Tailwind CSS (v4)** (estilização ágil focada em classes utilitárias)
+*   **React Router DOM** (gerenciamento de rotas e navegação entre telas)
+*   **React Hook Form** + **Zod** (para construção performática e validação robusta de formulários)
+*   **Lucide React** (biblioteca de ícones clean e elegantes)
+*   **LocalStorage** (persistência inicial de dados no navegador do usuário, com código preparado via _Service Pattern_ para uma futura migração com APIs e Bancos de Dados Reais como PostgreSQL).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Como Rodar o Projeto
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Pré-requisitos
+Certifique-se de ter o [Node.js](https://nodejs.org/) instalado em sua máquina.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Execute o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+3. Acesse a aplicação no seu navegador:
+   O Vite geralmente expõe o app em [http://localhost:5173/](http://localhost:5173/).
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🎨 Design e UI
+A identidade visual aposta em uma paleta terrosa e quente (utilizando cores como *#6F4E37* [marrom café], *#2E8B57* [verde folha] e *#FAF5F0* [bege areia]), remetendo diretamente ao cultivo do café, enquanto garante contraste adequado para visibilidade sob a luz solar — essencial para uso no campo.
