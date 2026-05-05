@@ -64,7 +64,7 @@ export function RegistroCliente() {
           
           {/* Nome */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="nomeCompleto" className="block text-sm font-semibold text-[#5c4a40]">
               Nome Completo <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -72,6 +72,7 @@ export function RegistroCliente() {
                 <User size={18} className="text-gray-400" />
               </div>
               <input
+                id="nomeCompleto"
                 type="text"
                 {...register('nome')}
                 className={`w-full p-3.5 pl-11 rounded-md bg-white border ${errors.nome ? 'border-red-500' : 'border-gray-100 shadow-sm'} text-gray-800 outline-none focus:ring-2 focus:ring-cafe-marrom/20 focus:border-cafe-marrom transition-all text-sm`}
@@ -83,7 +84,7 @@ export function RegistroCliente() {
 
           {/* Contato */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="contato" className="block text-sm font-semibold text-[#5c4a40]">
               Contato (Telefone/Email) <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -91,6 +92,7 @@ export function RegistroCliente() {
                 <Phone size={18} className="text-gray-400" />
               </div>
               <input
+                id="contato"
                 type="text"
                 {...register('contato')}
                 className={`w-full p-3.5 pl-11 rounded-md bg-white border ${errors.contato ? 'border-red-500' : 'border-gray-100 shadow-sm'} text-gray-800 outline-none focus:ring-2 focus:ring-cafe-marrom/20 focus:border-cafe-marrom transition-all text-sm`}
@@ -102,7 +104,7 @@ export function RegistroCliente() {
 
           {/* Endereço */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="endereco" className="block text-sm font-semibold text-[#5c4a40]">
               Endereço Completo <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -110,6 +112,7 @@ export function RegistroCliente() {
                 <MapPin size={18} className="text-gray-400" />
               </div>
               <textarea
+                id="endereco"
                 {...register('endereco')}
                 rows={4}
                 className={`w-full p-3.5 pl-11 rounded-md bg-white border ${errors.endereco ? 'border-red-500' : 'border-gray-100 shadow-sm'} text-gray-800 outline-none focus:ring-2 focus:ring-cafe-marrom/20 focus:border-cafe-marrom transition-all resize-none text-sm placeholder:text-gray-400`}
