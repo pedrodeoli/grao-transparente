@@ -85,10 +85,11 @@ export function RegistroLote() {
 
           {/* Código do Lote */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="codigoLote" className="block text-sm font-semibold text-[#5c4a40]">
               Código do Lote
             </label>
             <input
+              id="codigoLote"
               type="text"
               readOnly
               disabled
@@ -99,10 +100,11 @@ export function RegistroLote() {
 
           {/* Variedade do Grão */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="variedadeGrao" className="block text-sm font-semibold text-[#5c4a40]">
               Variedade do Grão <span className="text-red-500">*</span>
             </label>
             <select
+              id="variedadeGrao"
               {...register('variedade')}
               className={`w-full p-3.5 rounded-md bg-white border ${errors.variedade ? 'border-red-500' : 'border-gray-100 shadow-sm'} text-gray-800 outline-none focus:ring-2 focus:ring-cafe-marrom/20 focus:border-cafe-marrom transition-all appearance-none text-sm`}
             >
@@ -118,7 +120,7 @@ export function RegistroLote() {
 
           {/* Data da Colheita */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="dataColheita" className="block text-sm font-semibold text-[#5c4a40]">
               Data da Colheita <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -126,6 +128,7 @@ export function RegistroLote() {
                 <Calendar size={18} className="text-gray-400" />
               </div>
               <input
+                id="dataColheita"
                 type="date"
                 {...register('data_colheita')}
                 className={`w-full p-3.5 pl-11 rounded-md bg-white border ${errors.data_colheita ? 'border-red-500' : 'border-gray-100 shadow-sm'} text-gray-800 outline-none focus:ring-2 focus:ring-cafe-marrom/20 focus:border-cafe-marrom transition-all text-sm`}
@@ -163,7 +166,7 @@ export function RegistroLote() {
 
           {/* Quantidade de Pacotes */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="quantidadePacotes" className="block text-sm font-semibold text-[#5c4a40]">
               Quantidade de Pacotes <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -171,6 +174,7 @@ export function RegistroLote() {
                 <Package size={18} className="text-gray-400" />
               </div>
               <input
+                id="quantidadePacotes"
                 type="number"
                 min="1"
                 {...register('quantidade_pacotes')}
@@ -183,10 +187,11 @@ export function RegistroLote() {
 
           {/* Notas de Cultivo */}
           <div className="space-y-1.5 pt-2">
-            <label className="block text-sm font-semibold text-[#5c4a40]">
+            <label htmlFor="notasCultivo" className="block text-sm font-semibold text-[#5c4a40]">
               Notas de Cultivo
             </label>
             <textarea
+              id="notasCultivo"
               {...register('notas_cultivo')}
               rows={4}
               placeholder="Ex: Adubo orgânico, clima favorável, altitude 1200m..."

@@ -230,8 +230,9 @@ export function RegistroVenda() {
               
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-semibold text-[#5c4a40]">Lote Disponível</label>
+                  <label htmlFor="selectedLoteId" className="block text-sm font-semibold text-[#5c4a40]">Lote Disponível</label>
                   <select
+                    id="selectedLoteId"
                     value={selectedLoteId}
                     onChange={(e) => setSelectedLoteId(e.target.value)}
                     className="w-full p-3.5 rounded-md bg-gray-50 border border-gray-200 text-gray-800 outline-none focus:ring-2 focus:ring-cafe-marrom/20 focus:border-cafe-marrom transition-all text-sm appearance-none"
@@ -247,10 +248,11 @@ export function RegistroVenda() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="block text-sm font-semibold text-[#5c4a40]">
+                    <label htmlFor="quantidadeItem" className="block text-sm font-semibold text-[#5c4a40]">
                       Qtd. Pacotes
                     </label>
                     <input
+                      id="quantidadeItem"
                       type="number"
                       min="1"
                       value={quantidadeItem}
@@ -262,10 +264,11 @@ export function RegistroVenda() {
                     )}
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-sm font-semibold text-[#5c4a40]">
+                    <label htmlFor="precoUnitarioItem" className="block text-sm font-semibold text-[#5c4a40]">
                       Preço Unitário (R$)
                     </label>
                     <input
+                      id="precoUnitarioItem"
                       type="number"
                       min="0.01"
                       step="0.01"
