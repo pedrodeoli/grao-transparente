@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { ArrowLeft, Search, ShoppingCart, Plus, Trash2, CreditCard, Banknote, Landmark, Wallet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Cliente, Lote, ItemVenda, Venda } from '../types';
+import { api } from '../services/api';
 
 export function RegistroVenda() {
   const navigate = useNavigate();
@@ -28,12 +28,18 @@ export function RegistroVenda() {
   const [metodoPagamento, setMetodoPagamento] = useState<Venda['metodo_pagamento']>('Dinheiro');
 
   useEffect(() => {
-    const clientesSalvos = JSON.parse(localStorage.getItem('@grao:clientes') || '[]');
-    setClientes(clientesSalvos);
+    const carregarDados = async () => {
+      try {
+        const clientesApi = await api.getClientes();
+        setClientes(clientesApi);
 
-    const lotesSalvos = JSON.parse(localStorage.getItem('@grao:lotes') || '[]');
-    // Filtrar apenas lotes que possuem saldo
-    setLotesDisponiveis(lotesSalvos.filter((l: Lote) => l.quantidade_pacotes > 0));
+        const lotesApi = await api.getLotes();
+        setLotesDisponiveis(lotesApi.filter((l: Lote) => l.quantidade_pacotes > 0));
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+      }
+    };
+    carregarDados();
   }, []);
 
   // --- Funções de Cliente ---
@@ -85,7 +91,7 @@ export function RegistroVenda() {
     if (!lote) return;
 
     const novoItem: ItemVenda = {
-      id_item: uuidv4(),
+      id_item: Date.now().toString() + Math.floor(Math.random() * 1000),
       fk_lote: lote.id_lote,
       quantidade: Number(quantidadeItem),
       preco_unitario: Number(precoUnitarioItem),
@@ -109,42 +115,28 @@ export function RegistroVenda() {
   const valorTotalVenda = itensCarrinho.reduce((acc, item) => acc + item.subtotal, 0);
 
   // --- Função de Finalização ---
-  const handleFinalizarVenda = () => {
+  const handleFinalizarVenda = async () => {
     if (itensCarrinho.length === 0) {
       alert("Adicione pelo menos um item ao carrinho.");
       return;
     }
 
-    const novaVenda: Venda = {
-      id_venda: uuidv4(),
-      fk_cliente: clienteSelecionado?.id_cliente,
-      itens: itensCarrinho,
-      metodo_pagamento: metodoPagamento,
-      valor_total: valorTotalVenda,
-      data_venda: new Date().toISOString()
-    };
+    try {
+      const novaVenda = {
+        fk_cliente: clienteSelecionado?.id_cliente,
+        itens: itensCarrinho,
+        metodo_pagamento: metodoPagamento,
+        valor_total: valorTotalVenda,
+      };
 
-    // Baixa no estoque
-    const lotesAtuais = JSON.parse(localStorage.getItem('@grao:lotes') || '[]');
-    const lotesAtualizados = lotesAtuais.map((lote: Lote) => {
-      // Verifica se este lote teve itens vendidos nesta venda
-      const vendidos = itensCarrinho
-        .filter(item => item.fk_lote === lote.id_lote)
-        .reduce((acc, item) => acc + item.quantidade, 0);
-      
-      if (vendidos > 0) {
-        return { ...lote, quantidade_pacotes: lote.quantidade_pacotes - vendidos };
-      }
-      return lote;
-    });
+      await api.criarVenda(novaVenda);
 
-    // Salvar no storage
-    const vendasSalvas = JSON.parse(localStorage.getItem('@grao:vendas') || '[]');
-    localStorage.setItem('@grao:vendas', JSON.stringify([...vendasSalvas, novaVenda]));
-    localStorage.setItem('@grao:lotes', JSON.stringify(lotesAtualizados));
-
-    alert("Venda finalizada com sucesso!");
-    navigate('/estoque'); // Redirecionar para o dashboard para ver a baixa
+      alert("Venda finalizada com sucesso!");
+      navigate('/estoque'); // Redirecionar para o dashboard para ver a baixa
+    } catch (error) {
+      console.error('Erro ao finalizar venda:', error);
+      alert('Ocorreu um erro ao registrar a venda no banco de dados.');
+    }
   };
 
   return (
