@@ -1,25 +1,34 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const db = require('./db');
+const morgan = require('morgan');
+const logger = require('./logger');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Configuração do Morgan para direcionar logs de requisições HTTP para o Winston
+const morganStream = {
+  write: (message) => logger.info(message.trim()),
+};
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms', { stream: morganStream }));
+
 // ==========================================
 // ROTAS DE CLIENTES
 // ==========================================
-app.get('/api/clientes', async (req, res) => {
+app.get('/api/clientes', async (req, res, next) => {
   try {
     const { rows } = await db.query('SELECT * FROM clientes ORDER BY nome ASC');
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-app.post('/api/clientes', async (req, res) => {
+app.post('/api/clientes', async (req, res, next) => {
   const { nome, contato, endereco } = req.body;
   try {
     const result = await db.query(
@@ -28,32 +37,32 @@ app.post('/api/clientes', async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-app.delete('/api/clientes/:id', async (req, res) => {
+app.delete('/api/clientes/:id', async (req, res, next) => {
   try {
     await db.query('DELETE FROM clientes WHERE id_cliente = $1', [req.params.id]);
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // ==========================================
 // ROTAS DE LOTES
 // ==========================================
-app.get('/api/lotes', async (req, res) => {
+app.get('/api/lotes', async (req, res, next) => {
   try {
     const { rows } = await db.query('SELECT * FROM lotes ORDER BY data_colheita DESC');
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-app.post('/api/lotes', async (req, res) => {
+app.post('/api/lotes', async (req, res, next) => {
   const { codigo_lote, data_colheita, variedade, metodo_secagem, quantidade_pacotes, notas_cultivo } = req.body;
   try {
     const result = await db.query(
@@ -63,23 +72,23 @@ app.post('/api/lotes', async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-app.delete('/api/lotes/:id', async (req, res) => {
+app.delete('/api/lotes/:id', async (req, res, next) => {
   try {
     await db.query('DELETE FROM lotes WHERE id_lote = $1', [req.params.id]);
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // ==========================================
 // ROTAS DE VENDAS
 // ==========================================
-app.get('/api/vendas', async (req, res) => {
+app.get('/api/vendas', async (req, res, next) => {
   try {
     const { rows } = await db.query(`
       SELECT 
@@ -107,17 +116,15 @@ app.get('/api/vendas', async (req, res) => {
     
     res.json(vendasComItens);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Registrar venda completa (Transação)
-app.post('/api/vendas', async (req, res) => {
+app.post('/api/vendas', async (req, res, next) => {
   const { fk_cliente, metodo_pagamento, valor_total, itens } = req.body;
   
   // Transação no PostgreSQL
-  const client = await db.query('BEGIN').then(() => require('./db')); 
-  // Na verdade precisamos do cliente real da pool para transação
   const { Pool } = require('pg');
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const poolClient = await pool.connect();
@@ -154,13 +161,24 @@ app.post('/api/vendas', async (req, res) => {
     res.status(201).json({ id_venda: idVenda, message: 'Venda registrada com sucesso' });
   } catch (error) {
     await poolClient.query('ROLLBACK');
-    res.status(500).json({ error: 'Erro ao processar venda: ' + error.message });
+    next(error);
   } finally {
     poolClient.release();
   }
 });
 
+// ==========================================
+// MIDDLEWARE GLOBAL DE TRATAMENTO DE ERROS
+// ==========================================
+app.use((err, req, res, next) => {
+  // Registra o erro completo com Stack Trace no Winston (e no console colorido se dev)
+  logger.error('Erro interno ao processar requisição: %s', err.stack || err.message || err);
+  
+  // Resposta genérica e segura para o cliente
+  res.status(500).json({ error: 'Ocorreu um erro interno no servidor.' });
+});
+
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  logger.info(`Servidor rodando na porta ${PORT}`);
 });
