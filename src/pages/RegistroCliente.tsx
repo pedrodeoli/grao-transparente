@@ -1,10 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { v4 as uuidv4 } from 'uuid';
 import { ArrowLeft, User, Phone, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import type { Cliente } from '../types';
+import { api } from '../services/api';
 
 const clienteSchema = z.object({
   nome: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
@@ -28,14 +27,7 @@ export function RegistroCliente() {
 
   const onSubmit = async (data: ClienteFormData) => {
     try {
-      const novoCliente: Cliente = {
-        id_cliente: uuidv4(),
-        ...data,
-      };
-
-      const clientesSalvos = JSON.parse(localStorage.getItem('@grao:clientes') || '[]');
-      localStorage.setItem('@grao:clientes', JSON.stringify([...clientesSalvos, novoCliente]));
-
+      await api.criarCliente(data);
       alert('Cliente registrado com sucesso!');
       navigate('/');
     } catch (error) {

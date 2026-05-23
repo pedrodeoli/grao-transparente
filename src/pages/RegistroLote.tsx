@@ -1,11 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { v4 as uuidv4 } from 'uuid';
 import { ArrowLeft, Calendar, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import type { Lote } from '../types';
+import { api } from '../services/api';
 
 const loteSchema = z.object({
   codigo_lote: z.string(),
@@ -49,14 +48,7 @@ export function RegistroLote() {
 
   const onSubmit = async (data: LoteFormData) => {
     try {
-      const novoLote: Lote = {
-        id_lote: uuidv4(),
-        ...data,
-      };
-
-      const lotesSalvos = JSON.parse(localStorage.getItem('@grao:lotes') || '[]');
-      localStorage.setItem('@grao:lotes', JSON.stringify([...lotesSalvos, novoLote]));
-
+      await api.criarLote(data);
       alert('Lote registrado com sucesso!');
       navigate('/');
     } catch (error) {

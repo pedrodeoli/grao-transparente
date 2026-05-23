@@ -1,8 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { RegistroVenda } from '../RegistroVenda';
+import { api } from '../../services/api';
+
+vi.mock('../../services/api', () => ({
+  api: {
+    getClientes: vi.fn(),
+    getLotes: vi.fn(),
+    criarVenda: vi.fn(),
+  }
+}));
 
 const mockNavigate = vi.fn();
 
@@ -31,8 +40,9 @@ describe('RegistroVenda', () => {
   ];
 
   beforeEach(() => {
-    localStorage.clear();
-    localStorage.setItem('@grao:lotes', JSON.stringify(mockLotes));
+    vi.clearAllMocks();
+    vi.mocked(api.getClientes).mockResolvedValue([]);
+    vi.mocked(api.getLotes).mockResolvedValue(mockLotes);
     mockNavigate.mockClear();
     vi.spyOn(window, 'alert').mockImplementation(() => {});
   });
@@ -57,6 +67,11 @@ describe('RegistroVenda', () => {
         <RegistroVenda />
       </MemoryRouter>
     );
+
+    // Aguarda o carregamento da API
+    await waitFor(() => {
+      expect(api.getLotes).toHaveBeenCalled();
+    });
 
     // Seleciona o lote (lote-2 não deve aparecer pois tem quantidade 0)
     const selectLote = screen.getByRole('combobox');
@@ -92,6 +107,11 @@ describe('RegistroVenda', () => {
       </MemoryRouter>
     );
 
+    // Aguarda o carregamento da API
+    await waitFor(() => {
+      expect(api.getLotes).toHaveBeenCalled();
+    });
+
     const selectLote = screen.getByRole('combobox');
     await user.selectOptions(selectLote, 'lote-1');
 
@@ -120,6 +140,11 @@ describe('RegistroVenda', () => {
       </MemoryRouter>
     );
 
+    // Aguarda o carregamento da API
+    await waitFor(() => {
+      expect(api.getLotes).toHaveBeenCalled();
+    });
+
     // Preenche carrinho com 1 item
     const selectLote = screen.getByRole('combobox');
     await user.selectOptions(selectLote, 'lote-1');
@@ -131,15 +156,13 @@ describe('RegistroVenda', () => {
     const btnFinalizar = screen.getByRole('button', { name: /CONFIRMAR VENDA/i });
     await user.click(btnFinalizar);
 
-    // Verifica se salvou
-    const vendasStorage = JSON.parse(localStorage.getItem('@grao:vendas') || '[]');
-    expect(vendasStorage).toHaveLength(1);
-    expect(vendasStorage[0].itens).toHaveLength(1);
-    expect(vendasStorage[0].valor_total).toBe(10);
-
-    // Verifica se reduziu o estoque (tinha 10, vendeu 1, sobrou 9)
-    const lotesStorage = JSON.parse(localStorage.getItem('@grao:lotes') || '[]');
-    expect(lotesStorage[0].quantidade_pacotes).toBe(9);
+    // Verifica se salvou na API
+    await waitFor(() => {
+      expect(api.criarVenda).toHaveBeenCalledTimes(1);
+      const chamadaVenda = vi.mocked(api.criarVenda).mock.calls[0][0];
+      expect(chamadaVenda.itens).toHaveLength(1);
+      expect(chamadaVenda.valor_total).toBe(10);
+    });
 
     // Verifica se redirecionou
     expect(mockNavigate).toHaveBeenCalledWith('/estoque');
