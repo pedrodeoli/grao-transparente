@@ -3,6 +3,13 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { RegistroCliente } from '../RegistroCliente';
+import { api } from '../../services/api';
+
+vi.mock('../../services/api', () => ({
+  api: {
+    criarCliente: vi.fn(),
+  }
+}));
 
 const mockNavigate = vi.fn();
 
@@ -16,7 +23,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('RegistroCliente', () => {
   beforeEach(() => {
-    localStorage.clear();
+    vi.clearAllMocks();
     mockNavigate.mockClear();
     vi.spyOn(window, 'alert').mockImplementation(() => {});
   });
@@ -52,8 +59,8 @@ describe('RegistroCliente', () => {
     expect(await screen.findByText('Informe um telefone ou email de contato válido')).toBeInTheDocument();
     expect(await screen.findByText('Informe o endereço completo')).toBeInTheDocument();
     
-    // Garantir que não salvou
-    expect(localStorage.getItem('@grao:clientes')).toBeNull();
+    // Garantir que não chamou a api
+    expect(api.criarCliente).not.toHaveBeenCalled();
   });
 
   it('deve salvar os dados corretamente no localStorage e redirecionar ao preencher tudo certo', async () => {
@@ -76,11 +83,12 @@ describe('RegistroCliente', () => {
 
     // Verificando submissão
     await waitFor(() => {
-      const clientesStorage = JSON.parse(localStorage.getItem('@grao:clientes') || '[]');
-      expect(clientesStorage).toHaveLength(1);
-      expect(clientesStorage[0].nome).toBe('João da Silva');
-      expect(clientesStorage[0].contato).toBe('joao@email.com');
-      expect(clientesStorage[0].endereco).toBe('Rua das Flores, 123');
+      expect(api.criarCliente).toHaveBeenCalledTimes(1);
+      expect(api.criarCliente).toHaveBeenCalledWith({
+        nome: 'João da Silva',
+        contato: 'joao@email.com',
+        endereco: 'Rua das Flores, 123'
+      });
     });
 
     // Validando alertas e navegação

@@ -22,25 +22,29 @@ Este projeto foi construído utilizando tecnologias modernas para o ecossistema 
 *   **React Router DOM** (gerenciamento de rotas e navegação entre telas)
 *   **React Hook Form** + **Zod** (para construção performática e validação robusta de formulários)
 *   **Lucide React** (biblioteca de ícones clean e elegantes)
-*   **LocalStorage** (persistência inicial de dados no navegador do usuário, com código preparado via _Service Pattern_ para uma futura migração com APIs e Bancos de Dados Reais como PostgreSQL).
+*   **Node.js & Express** (API backend robusta)
+*   **PostgreSQL & Docker** (banco de dados relacional e infraestrutura em contêineres)
 
 ## 🚀 Como Rodar o Projeto
 
 ### Pré-requisitos
-Certifique-se de ter o [Node.js](https://nodejs.org/) instalado em sua máquina.
+Certifique-se de ter o [Node.js](https://nodejs.org/) e o [Docker](https://www.docker.com/) instalados em sua máquina.
 
-1. Instale as dependências:
+1. Instale as dependências (do Frontend e Backend):
    ```bash
    npm install
+   cd backend && npm install
+   cd ..
    ```
 
-2. Execute o servidor de desenvolvimento:
+2. Execute o banco de dados, o backend e o frontend simultaneamente com um único comando:
    ```bash
-   npm run dev
+   npm run dev:all
    ```
 
 3. Acesse a aplicação no seu navegador:
    O Vite geralmente expõe o app em [http://localhost:5173/](http://localhost:5173/).
+   O Backend estará rodando em `http://localhost:3333/api/`.
 
 ## 🎨 Design e UI
 A identidade visual aposta em uma paleta terrosa e quente (utilizando cores como *#6F4E37* [marrom café], *#2E8B57* [verde folha] e *#FAF5F0* [bege areia]), remetendo diretamente ao cultivo do café, enquanto garante contraste adequado para visibilidade sob a luz solar — essencial para uso no campo.

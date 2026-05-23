@@ -3,6 +3,13 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { RegistroLote } from '../RegistroLote';
+import { api } from '../../services/api';
+
+vi.mock('../../services/api', () => ({
+  api: {
+    criarLote: vi.fn(),
+  }
+}));
 
 const mockNavigate = vi.fn();
 
@@ -16,7 +23,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('RegistroLote', () => {
   beforeEach(() => {
-    localStorage.clear();
+    vi.clearAllMocks();
     mockNavigate.mockClear();
     vi.spyOn(window, 'alert').mockImplementation(() => {});
   });
@@ -52,8 +59,8 @@ describe('RegistroLote', () => {
     // Deve aparecer a mensagem de erro da data de colheita exigida pelo Zod
     expect(await screen.findByText('A data de colheita é obrigatória')).toBeInTheDocument();
     
-    // O localStorage não deve ter sido alterado
-    expect(localStorage.getItem('@grao:lotes')).toBeNull();
+    // A api não deve ter sido chamada
+    expect(api.criarLote).not.toHaveBeenCalled();
   });
 
   it('deve salvar os dados corretamente no localStorage e redirecionar ao preencher tudo certo', async () => {
@@ -89,13 +96,13 @@ describe('RegistroLote', () => {
 
     // Verifica se salvou usando waitFor para aguardar o comportamento async do react-hook-form
     await waitFor(() => {
-      const lotesStorage = JSON.parse(localStorage.getItem('@grao:lotes') || '[]');
-      expect(lotesStorage).toHaveLength(1);
-      expect(lotesStorage[0].variedade).toBe('Catuaí');
-      expect(lotesStorage[0].quantidade_pacotes).toBe(50);
-      expect(lotesStorage[0].data_colheita).toBe('2026-05-10');
-      expect(lotesStorage[0].metodo_secagem).toBe('Secagem mecânica: secador estático');
-      expect(lotesStorage[0].notas_cultivo).toBe('Lote especial teste');
+      expect(api.criarLote).toHaveBeenCalledTimes(1);
+      const callData = vi.mocked(api.criarLote).mock.calls[0][0];
+      expect(callData.variedade).toBe('Catuaí');
+      expect(callData.quantidade_pacotes).toBe(50);
+      expect(callData.data_colheita).toBe('2026-05-10');
+      expect(callData.metodo_secagem).toBe('Secagem mecânica: secador estático');
+      expect(callData.notas_cultivo).toBe('Lote especial teste');
     });
 
     // Verifica se exibiu o alerta
