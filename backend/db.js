@@ -1,16 +1,18 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+const logger = require('./logger');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
 pool.on('connect', () => {
-  console.log('Conexão estabelecida com o banco de dados PostgreSQL.');
+  logger.info('Conexão estabelecida com o banco de dados PostgreSQL.');
 });
 
 pool.on('error', (err) => {
-  console.error('Erro na conexão com o banco de dados:', err);
+  logger.error('Erro na conexão com o banco de dados:', err);
 });
 
 module.exports = {
